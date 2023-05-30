@@ -63,14 +63,14 @@ https://github.com/ValaxyTech/DevOpsDemos/blob/master/SimpeDevOpsProjects/Projec
 	Passphase/ passowrd : 123456
 	     Test configuration ->     * If fail:
 
-docker]#
-vi /ect/ssh/sshd_congig
+6. Enable PasswordAuthentication:
+docker~]# vi /ect/ssh/sshd_congig
 	remove # -> Password authentication yes
 		   # PermitEmptyPasswords no
 		   # PasswordAuthentication no
-service sshd restart
+docker~]# service sshd restart
 
-		Test configuration -> will success.
+		Test configuration ->Now, will success.
 
 Apply & Save.
 	
@@ -79,16 +79,16 @@ Apply & Save.
 	
 
 
-6. Create Jenkins job
+7. Create Jenkins job
 	Create Poject-> Name:... -> Maven Project -> Ok
 
-	General: Select Git
+   General: Select Git
      A) Source Code Management
-	Repository : https://github.com/ValaxyTech/hello-world.git 	-follow project 4 for better Decokerfile
- 	Credentials: no need because Pub Repo.	- If it s Private Repo, then Use Credential.							
+	Repository : https://github.com/ValaxyTech/hello-world.git 	
+ 	Credentials: no need because it is Pub Repo.	- If it s Private Repo, then Use Credential.							
 	Branches to build : */master
 	
-	Build:
+   Build:
      B) Build Root POM: pom.xml	oals and options : clean install package	(To create Latest Image)
 
      C) Post steps: -> send files or execute commands over SSH 	- for Creating IMAGE
@@ -110,19 +110,19 @@ Apply & Save.
 	Apply & Save..
 
 
-7. Login to Docker host and check images and containers. (no images and containers)
+8. Login to Docker host and check images and containers. (no images and containers)
 	docker images
 	docker ps
 
-8. Execute Jenkins job ==> Build Now.
+9. Execute Jenkins job ==> Build Now.
 
-9. check images and containers again on Docker host. This time an image and container get creates through Jenkins job
+10. check images and containers again on Docker host. This time an image and container get creates through Jenkins job
 
-10. Access web application from browser which is running on container
+11. Access web application from browser which is running on container
 
 	<docker_host_Public_IP>:8090		--> Eu.
 
-If Build Fail:
+If Deploy Fail:
 
   chown -R dockeradmin:dockeradmin /opt/docker
 
