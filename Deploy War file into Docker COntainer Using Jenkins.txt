@@ -1,0 +1,135 @@
+How to Deploy a Warfile to Docker Container: Bu Using Ansible also instead of Jenkins. (Next Project)
+===========================================
+
+https://github.com/ValaxyTech/DevOpsDemos/blob/master/SimpeDevOpsProjects/Project-3.MD
+
+1. Deploy warfile to Docker Container by Jenkins:
+  =============================================
+
+	Dev -> Commit Code --> GitHub --> Build & Test --> Jenkins --> Deploy --> DockerContainer.
+ Steps:
+======
+  Create 2Ec2: t2.Micro    and Login.
+1. A. Jenkins Instance: Install Jenkins - Git - Maven  & Prepare Jenkins Dashboard.
+   B. Docker Instance -> Install Docker & Start Service.
+	sudo su -
+	yum install docker -y
+	service docker start
+	service docker status
+
+2 user creation for Docker Management:
+	useradd dockeradmin
+	passwd dockeradmin
+
+	password 123456
+	retype password 123456
+
+3. Add User to docker Group
+	usermod -aG docker dockeradmin
+
+4. Write a Docker file under /opt/docker
+	mkdir /opt/docker
+	chown -R dockeradmin:dockeradmin /opt/docker
+
+   vi Dockerfile
+	# Pull base image 
+	From tomcat:8-jre8 
+
+	# Maintainer
+	MAINTAINER "valaxytech" 
+
+	# copy war file on to target Container 
+	COPY ./webapp.war /usr/local/tomcat/webapps
+
+    Save.
+
+5. Login to Jenkins console and add Docker server to execute commands from Jenkins"
+    * Docker server and credentials:
+    	
+  Install Plugin: Publish OverSSH & Maven Integration.
+  ===============
+	Manage Jenkins --> Manage Plugin -> Available -> Publish over SSH -> Install
+	Manage Jenkins --> Global tool Configuration -> Maven Name: Maven -> Version: 3.6.1 -> Save.
+
+   Configure Docker to Jenkins:
+   ===========================
+	Manage Jenkins --> Configure system --> Publish over SSH --> 
+						Add-->SSH Servers ->Add -> Name: docker_host
+	   			  		Hostname: Docker 's Private Ip
+	    			  		Username:dockeradmin
+	    			   		Remote Directory: nothing
+	
+	     Advance -> tick -> Use password authentication, or use a different key ->
+	Passphase/ passowrd : 123456
+	     Test configuration ->     * If fail:
+
+docker]#
+vi /ect/ssh/sshd_congig
+	remove # -> Password authentication yes
+		   # PermitEmptyPasswords no
+		   # PasswordAuthentication no
+service sshd restart
+
+		Test configuration -> will success.
+
+Apply & Save.
+	
+   * then only Containers will be created.
+   * If we try with Ansible, then no need to follow this 5th step.
+	
+
+
+6. Create Jenkins job
+	Create Poject-> Name:... -> Maven Project -> Ok
+
+	General: Select Git
+     A) Source Code Management
+	Repository : https://github.com/ValaxyTech/hello-world.git 	-follow project 4 for better Decokerfile
+ 	Credentials: no need because Pub Repo.	- If it s Private Repo, then Use Credential.							
+	Branches to build : */master
+	
+	Build:
+     B) Build Root POM: pom.xml	oals and options : clean install package	(To create Latest Image)
+
+     C) Post steps: -> send files or execute commands over SSH 	- for Creating IMAGE
+	SSH Server Name: docker_host				  ------------------
+	Source files : webapp/target/*.war 
+        Remove prefix : webapp/target 
+        Remote directory ://opt//docker			- to where create DockerImage (If normal dockerfile placed   //home//docekradmin)
+ 	Exec command[s] : paste these cmds
+	  docker stop valaxy_demo;
+	  docker rm -f valaxy_demo;
+	  docker image rm -f valaxy_demo;
+	  cd /opt/docker;
+	  docker build -t valaxy_demo .	
+
+     D) Post steps: send files or execute commands over SSH	- for Creating CONT.
+	Name: docker_host					  -----------------
+	Exec command : docker run -d --name valaxy_demo -p 8090:8080 valaxy_demo     (Create CONT)
+
+	Apply & Save..
+
+
+7. Login to Docker host and check images and containers. (no images and containers)
+	docker images
+	docker ps
+
+8. Execute Jenkins job ==> Build Now.
+
+9. check images and containers again on Docker host. This time an image and container get creates through Jenkins job
+
+10. Access web application from browser which is running on container
+
+	<docker_host_Public_IP>:8090		--> Eu.
+
+If Build Fail:
+
+  chown -R dockeradmin:dockeradmin /opt/docker
+
+
+	docker images
+	docker ps
+
+
+	<docker_host_Public_IP>:8090/webapp		--> Eu.
+
