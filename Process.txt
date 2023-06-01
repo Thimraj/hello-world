@@ -30,6 +30,7 @@ https://github.com/ValaxyTech/DevOpsDemos/blob/master/SimpeDevOpsProjects/Projec
 4. Write a Docker file under /opt/docker
 	mkdir /opt/docker
 	chown -R dockeradmin:dockeradmin /opt/docker
+	usermod -aG docker dockeradmin
 
    vi Dockerfile
 	# Pull base image 
@@ -125,6 +126,8 @@ Apply & Save.
 If Deploy Fail:
 
   chown -R dockeradmin:dockeradmin /opt/docker
+  usermod -aG docker dockeradmin
+  check vi Dockerfile
 
 
 	docker images
