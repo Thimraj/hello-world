@@ -1,4 +1,5 @@
-<h1 align="center" class="underline">Hello, Welcome to Valaxy Technologies !!!</h1>
+<h1 align="center" style="text-decoration: underline;">Hello, Welcome to Valaxy Technologies !!!</h1>
+
 
 <html>
 <body>
